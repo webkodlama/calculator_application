@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesap Makinesi</title>
+</head>
+<style>
+:root{
+    --color_one: #272727;
+    --color_two: #1b74b5;
+    --color_three: #0e802e;
+}
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+html{
+    font-size: 10px;
+}
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    height: 100vh;
+    background-color: var(--color_one);
+}
+.container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.calculator {
+    width: 320px;
+    height: 460px;
+    border-radius: 40px;
+    border: 3px solid rgb(96,96,96);
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.btn_cont {
+    display: flex;
+    gap: 10px;
+}
+.btn, .equals, .AC, .DE, .result {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color_two);
+    font-weight: bold;
+    text-align: center;
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+    border-radius: 50%;
+    background-color: rgb(47, 47, 47);
+    cursor: pointer;
+    outline: none;
+    border: none;
+    box-shadow: -1px 3px 2px 0px rgb(96,96,96);
+    transition: all .05s ease-in-out;
+}
+.btn, .equals, .AC, .DE{
+    text-shadow: 1px 1px 2px var(--color_two);
+}
+.btn:active,
+.equals:active,
+.AC:active,
+.DE:active{
+    transform: scale(.95);
+}
+.btn:not(.num),
+.equals,
+.AC,
+.DE{
+    color: var(--color_three);
+    text-shadow: 1px 1px 2px var(--color_three);
+}
+.result {
+    box-shadow: none;
+    display: flex;
+    justify-content: end;
+    color: white;
+    width: 270px;
+    text-align: right;
+    padding-inline: 10px;
+    letter-spacing: 2px;
+    font-weight: normal;
+    text-shadow: 1px 1px 1px rgb(212,212,212);
+    cursor: auto;
+    border-radius: 20px;
+    overflow: hidden;
+    text-wrap: nowrap;
+}
+.equals{
+    width: 130px;
+    border-radius: 50px;
+}
+</style>
+<body>
+    
+
+
+        <div class="container">
+            <div class="calculator">
+                <div class="result"></div>
+                <div class="btn_cont">
+                    <button class="AC" onclick="result.innerText = ''">AC</button><!-- result içindeki yazıyı sıfırla demek-->
+                    <button class="DE" onclick="removeLastChar()">DE</button><!--son karakteri sil-->
+                    <button class="btn point">.</button>
+                    <button class="btn division">/</button>
+                </div>
+    
+                <div class="btn_cont">
+                    <button class="btn num seven">7</button>
+                    <button class="btn num eight">8</button>
+                    <button class="btn num nine">9</button>
+                    <button class="btn multi">*</button>
+                </div>
+    
+                <div class="btn_cont">
+                    <button class="btn num four">4</button>
+                    <button class="btn num five">5</button>
+                    <button class="btn num six">6</button>
+                    <button class="btn sub">-</button>
+                </div>
+    
+                <div class="btn_cont">
+                    <button class="btn num one">1</button>
+                    <button class="btn num two">2</button>
+                    <button class="btn num three">3</button>
+                    <button class="btn plus">+</button>
+                </div>
+    
+                <div class="btn_cont">
+                    <button class="btn dbl_zero">00</button>
+                    <button class="btn zero">0</button>
+                    <button class="btn equals">=</button>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+
+<script>
+    // updateDisplay() /*Kullanıcı bir düğmeye tıkladığında, ilgili işlem gerçekleştirilir ve ardından ekran güncellenir.Başka bir işlem için kendi kendini içeriden günceller*/
+
+
+    var result = document.querySelector(".result");
+
+const ac = document.querySelector('.AC');
+const de = document.querySelector('.DE');
+const point = document.querySelector('.point');
+const division = document.querySelector('.division');
+
+const seven = document.querySelector('.seven');
+const eight = document.querySelector('.eight');
+const nine = document.querySelector('.nine');
+const multi = document.querySelector('.multi');
+
+const four = document.querySelector('.four');
+const five = document.querySelector('.five');
+const six = document.querySelector('.six');
+const sub = document.querySelector('.sub');
+
+const one = document.querySelector('.one');
+const two = document.querySelector('.two');
+const three = document.querySelector('.three');
+const plus = document.querySelector('.plus');
+
+const dbl_zero = document.querySelector('.dbl_zero');
+const zero = document.querySelector('.zero');
+const equals = document.querySelector('.equals');
+
+const keyToButtonMap = {
+    '0': zero,
+    '1': one,
+    '2': two,
+    '3': three,
+    '4': four,
+    '5': five,
+    '6': six,
+    '7': seven,
+    '8': eight,
+    '9': nine,
+    '+': plus,
+    '-': sub,
+    '*': multi,
+    '/': division,
+    ',': point,
+    '.': point,
+    'Enter': equals
+};
+
+window.addEventListener('keydown', function (e) { /*window klavyesinde her hangi bir tuşa basıldığında eklendiğinde 'e' adındaki function çalışacak*/ 
+/*eğer hata verirse*/ if (result.innerText === "Hata") {
+        result.innerText = "";/*eğer hata verirse hemen inputu temizlesin*/ 
+    }
+    if (e.key === 'Backspace') {
+        e.preventDefault();
+        removeLastChar();
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        evaluateResult();
+    } else if (keyToButtonMap.hasOwnProperty(e.key)) {
+        e.preventDefault();
+        keyToButtonMap[e.key].click();
+    }
+});
+
+equals.addEventListener('click', evaluateResult);
+
+document.querySelectorAll('.btn').forEach(button => {
+    button.addEventListener('click', (e) => {
+        let lastChar = result.innerText.slice(-1);
+        let value = e.target.textContent;
+
+        if (result.innerText === "Hata") {
+            result.innerText = "";
+        } else if (['+', '-', '*', '/', '.', ''].includes(value) &&
+            ['+', '-', '*', '/', '.', ''].includes(lastChar)) {
+        } else if (value === "=") {
+            evaluateResult();
+        } else if (value === "AC") {
+            result.innerText = "";
+        } else if (value === "DE") {
+            removeLastChar();
+        } else {
+            result.innerText += value;
+        }
+    });
+});
+
+function removeLastChar() {
+    result.innerText = result.innerText.slice(0, -1);
+}
+
+function evaluateResult() {
+    let operation = result.innerText.replace(/,/g, '.');
+
+    try {
+        const resultValue = new Function('return ' + operation)();
+        result.innerText = resultValue.toString().replace(/\./g, ',');
+    } catch (e) {
+        result.innerText = 'Hata';
+        console.error('Hatalı işlem:', e);
+    }
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+</body>
+</html>
